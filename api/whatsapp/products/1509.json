@@ -1,0 +1,15 @@
+{
+  "id": 1509,
+  "nome": "Prato Triton Replica AZUL ESCURO",
+  "codigo": "000425",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 49.9,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
