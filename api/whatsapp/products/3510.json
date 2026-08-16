@@ -1,0 +1,15 @@
+{
+  "id": 3510,
+  "nome": "Piteira de Vidro Madame",
+  "codigo": "1001033",
+  "categoria": "HeadShop",
+  "subcategoria": "Piteiras",
+  "descricao": null,
+  "preco": 25,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
