@@ -1,0 +1,15 @@
+{
+  "id": 1505,
+  "nome": "Prato Trieb Alteza VERMELHO",
+  "codigo": "1000565",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 69,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
