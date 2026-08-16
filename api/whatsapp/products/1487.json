@@ -1,0 +1,15 @@
+{
+  "id": 1487,
+  "nome": "Prato Diamond Pequeno ROSA PINK",
+  "codigo": "000503",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 69,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 1,
+  "ordem": 0,
+  "imagem": null
+}
