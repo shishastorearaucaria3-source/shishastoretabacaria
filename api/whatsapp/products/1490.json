@@ -1,0 +1,15 @@
+{
+  "id": 1490,
+  "nome": "Prato EBS PRETO COM DOURADO",
+  "codigo": "1001003",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 69.9,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
