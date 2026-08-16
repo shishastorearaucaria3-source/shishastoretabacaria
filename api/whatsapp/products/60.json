@@ -1,0 +1,15 @@
+{
+  "id": 60,
+  "nome": "Bebida Monster Peach",
+  "codigo": "7898938890090",
+  "categoria": "Bebidas",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 12,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
