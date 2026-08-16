@@ -1,0 +1,15 @@
+{
+  "id": 897,
+  "nome": "Piteira De Plástico",
+  "codigo": "1001210",
+  "categoria": "Acessórios De Narguile",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 15,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": -1,
+  "ordem": 0,
+  "imagem": null
+}
