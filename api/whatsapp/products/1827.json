@@ -1,0 +1,15 @@
+{
+  "id": 1827,
+  "nome": "seda de vidro fino",
+  "codigo": "1001106",
+  "categoria": "HeadShop",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 8.75,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
