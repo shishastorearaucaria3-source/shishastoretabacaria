@@ -1,0 +1,15 @@
+{
+  "id": 1513,
+  "nome": "Prato Triton Replica VERMELHO",
+  "codigo": "1000572",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 49,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
