@@ -1,0 +1,15 @@
+{
+  "id": 3506,
+  "nome": "Rosh Bking Wakanda",
+  "codigo": "1001029",
+  "categoria": "roshs",
+  "subcategoria": "Bking",
+  "descricao": null,
+  "preco": 30,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
