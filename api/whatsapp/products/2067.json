@@ -1,0 +1,15 @@
+{
+  "id": 2067,
+  "nome": "Zip Loc Rick and Morty Rick Chapado",
+  "codigo": "1001324",
+  "categoria": "HeadShop",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 7.5,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 38,
+  "ordem": 0,
+  "imagem": null
+}
