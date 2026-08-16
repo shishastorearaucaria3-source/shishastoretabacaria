@@ -1,0 +1,15 @@
+{
+  "id": 3829,
+  "nome": "HeadShop Dichavador Bala",
+  "codigo": "1001406",
+  "categoria": "HeadShop",
+  "subcategoria": "Dichavadores",
+  "descricao": null,
+  "preco": 34.9,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 4,
+  "ordem": 0,
+  "imagem": null
+}
