@@ -1,0 +1,15 @@
+{
+  "id": 1523,
+  "nome": "Prato Yes Lotus VERMELHO",
+  "codigo": "1000552",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 49,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
