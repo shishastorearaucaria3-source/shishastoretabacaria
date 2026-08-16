@@ -1,0 +1,15 @@
+{
+  "id": 1484,
+  "nome": "Prato Chams",
+  "codigo": "000180",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 25,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
