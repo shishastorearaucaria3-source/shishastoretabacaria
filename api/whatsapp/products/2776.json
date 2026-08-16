@@ -1,0 +1,15 @@
+{
+  "id": 2776,
+  "nome": "Pedra Zippo",
+  "codigo": "000634",
+  "categoria": "HeadShop",
+  "subcategoria": "Acessôrios",
+  "descricao": null,
+  "preco": 19.9,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 2,
+  "ordem": 0,
+  "imagem": null
+}
