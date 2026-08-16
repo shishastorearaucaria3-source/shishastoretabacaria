@@ -1,0 +1,15 @@
+{
+  "id": 55,
+  "nome": "Bebida Energetico Red Bull Tropical",
+  "codigo": "9002490229160",
+  "categoria": "Bebidas",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 10.8,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 2,
+  "ordem": 0,
+  "imagem": null
+}
