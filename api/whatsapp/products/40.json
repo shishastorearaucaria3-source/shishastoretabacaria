@@ -1,0 +1,15 @@
+{
+  "id": 40,
+  "nome": "Batedor de Carvão Artcoco",
+  "codigo": "1000449",
+  "categoria": "Carvões e Fogareiros",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 39.9,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
