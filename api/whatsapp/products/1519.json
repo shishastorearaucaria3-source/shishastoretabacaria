@@ -1,0 +1,15 @@
+{
+  "id": 1519,
+  "nome": "Prato Yes Lotus PRETO",
+  "codigo": "1000554",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 49,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
