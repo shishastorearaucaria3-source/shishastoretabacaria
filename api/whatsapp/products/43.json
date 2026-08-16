@@ -1,0 +1,15 @@
+{
+  "id": 43,
+  "nome": "Bebida 51 Ice Limão",
+  "codigo": "7896002110419",
+  "categoria": "Bebidas",
+  "subcategoria": null,
+  "descricao": null,
+  "preco": 8,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": false,
+  "estoque": 0,
+  "ordem": 0,
+  "imagem": null
+}
