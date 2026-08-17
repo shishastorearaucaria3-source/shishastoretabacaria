@@ -484,21 +484,20 @@ function htmlCheckout(){
   const entregaAtiva = estado.checkout.modo === 'entrega';
   let modoBtns = '';
   if(temRetirada && !temEntrega){
-    modoBtns = '<button class="modo-btn ativa" onclick="setModo('retirada')">🛍️ Retirada na loja</button>';
+    modoBtns = '<button class="modo-btn ativa" onclick="setModo(\'retirada\')">🛍️ Retirada na loja</button>';
   } else if(temEntrega && !temRetirada){
-    modoBtns = '<button class="modo-btn ativa" onclick="setModo('entrega')">🛵 Entrega</button>';
+    modoBtns = '<button class="modo-btn ativa" onclick="setModo(\'entrega\')">🛵 Entrega</button>';
   } else {
-    modoBtns = '<button class="modo-btn'+(entregaAtiva?' ativa':'')+'" onclick="setModo('entrega')">🛵 Entrega</button>'+
-               '<button class="modo-btn'+(entregaAtiva?'':' ativa')+'" onclick="setModo('retirada')">🛍️ Retirada</button>';
+    modoBtns = '<button class="modo-btn'+(entregaAtiva?' ativa':'')+'" onclick="setModo(\'entrega\')">🛵 Entrega</button>'+
+               '<button class="modo-btn'+(entregaAtiva?'':' ativa')+'" onclick="setModo(\'retirada\')">🛍️ Retirada</button>';
   }
   const optZonas = zonas.map(z=>'<option value="'+z.id+'"'+(z.id===estado.checkout.zonaId?' selected':'')+'>'+esc(z.nome)+' — '+fmt(z.preco)+'</option>').join('');
   const zonaCampo = zonas.length ? (
     '<div class="fld"><label>Zona de entrega</label>'+
-    '<select id="ck-zona" onchange="document.getElementById('ck-zona-info').textContent='';document.getElementById('ck-zona-info').className='zona-info';document.getElementById('ck-zona-id').value=this.value;estado.checkout.zonaId=this.value===''?null:Number(this.value);atualizarResumo()">'+
+    '<select id="ck-zona" onchange="mudarZona(this)">'+
     '<option value="">Selecione a zona...</option>'+optZonas+'</select>'+
     '<button class="localizar" type="button" onclick="buscarCep()">Localizar zona pelo CEP</button>'+
     '<div class="zona-info" id="ck-zona-info"></div>'+
-    '<input type="hidden" id="ck-zona-id" value="'+(estado.checkout.zonaId??'')+'"/>'+
     '</div>'
   ) : '';
   const entregaFields = entregaAtiva ? (
@@ -529,6 +528,14 @@ function htmlCheckout(){
   '</div>';
 }
 
+function mudarZona(el){
+  const v = el.value;
+  estado.checkout.zonaId = v === '' ? null : Number(v);
+  const info = document.getElementById('ck-zona-info');
+  if(info){ info.textContent = ''; info.className = 'zona-info'; }
+  atualizarResumo();
+}
+
 function setModo(m){
   estado.checkout.modo = m;
   renderizarCarrinho();
@@ -552,13 +559,13 @@ async function buscarCep(){
     renderizarCarrinho();
     const i2 = document.getElementById('ck-zona-info');
     if(i2){
-      if(estado.loja.loja_lat && estado.loja.loja_lng){
+      if((estado.loja.zonas||[]).length > 0){
         i2.textContent = 'Buscando sua localização na área de entrega...';
       } else {
-        i2.textContent = 'Endereço preenchido. Selecione a zona de entrega.';
+        i2.textContent = 'Endereço preenchido.';
       }
     }
-    if(estado.loja.loja_lat && estado.loja.loja_lng){
+    if((estado.loja.zonas||[]).length > 0){
       localizarZona();
     }
   }catch(e){
