@@ -156,6 +156,17 @@ footer{border-top:1px solid var(--line);margin-top:30px;background:#fff}
 .localizar{width:100%;margin-top:6px;padding:9px;border-radius:10px;border:1px solid var(--line);background:#f8fafc;color:var(--ink);font-weight:600;font-size:13px}
 .localizar:hover{background:#f1f5f9}
 
+/* Manutenção / pedidos desativados */
+.aviso-pedidos{display:none;background:#fef3c7;color:#92400e;text-align:center;font-size:13px;font-weight:600;padding:8px 14px}
+.aviso-pedidos.visivel{display:block}
+.manutencao-overlay{position:fixed;inset:0;z-index:100;background:#f8fafc;display:none;align-items:center;justify-content:center;padding:20px;text-align:center}
+.manutencao-overlay.visivel{display:flex}
+.manutencao-box{max-width:420px}
+.manutencao-box .logo-grande{width:72px;height:72px;border-radius:18px;background:var(--brand);color:#fff;font-size:36px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.manutencao-box h2{font-size:22px;font-weight:800;margin-bottom:8px}
+.manutencao-box p{color:var(--muted);font-size:14px;line-height:1.6}
+.manutencao-box .contato{margin-top:16px;font-size:13px}
+
 @media(max-width:860px){
   .layout{grid-template-columns:1fr;padding:12px}
   .sidebar{display:none}
@@ -283,6 +294,17 @@ footer{border-top:1px solid var(--line);margin-top:30px;background:#fff}
 
 <div class="toast" id="toast"></div>
 
+<div class="aviso-pedidos" id="aviso-pedidos">⚠️ Pedidos temporariamente desativados — visite a loja ou fale conosco.</div>
+
+<div class="manutencao-overlay" id="manutencao-overlay">
+  <div class="manutencao-box">
+    <div class="logo-grande" id="manut-logo">S</div>
+    <h2 id="manut-titulo">Em manutenção</h2>
+    <p id="manut-texto">Estamos atualizando o catálogo. Volte em instantes ou fale conosco pelo WhatsApp.</p>
+    <div class="contato" id="manut-contato"></div>
+  </div>
+</div>
+
 <script src="dados.js"></script>
 <script>
 const DADOS = window.DADOS;
@@ -390,9 +412,10 @@ function renderizar(){
     const preco = promo ? p.preco_promo : p.preco;
     const q = estado.carrinho[p.id] || 0;
     const semEstoque = !p.disponivel;
-    const podeComprar = !semEstoque || (EXIBICAO.sem_estoque === 'manter' && EXIBICAO.aceitar_pedidos_sem_estoque);
+    const pedidosOff = estado.loja.pedidos_ativos === false;
+    const podeComprar = !pedidosOff && (!semEstoque || (EXIBICAO.sem_estoque === 'manter' && EXIBICAO.aceitar_pedidos_sem_estoque));
     const addCls = semEstoque && !podeComprar ? 'add-btn disabled' : (q ? 'add-btn added' : 'add-btn');
-    const addTxt = semEstoque && !podeComprar ? 'Sem estoque' : (q ? 'Adicionado ('+q+')' : 'Adicionar');
+    const addTxt = pedidosOff ? 'Indisponível' : (semEstoque && !podeComprar ? 'Sem estoque' : (q ? 'Adicionado ('+q+')' : 'Adicionar'));
     const btn = podeComprar
       ? '<button class="'+addCls+'" onclick="addProduto('+p.id+')">'+addTxt+'</button>'
       : '<button class="'+addCls+'" disabled>'+addTxt+'</button>';
@@ -633,6 +656,7 @@ function atualizarResumo(){
 function finalizarPedido(){
   const ids = Object.keys(estado.carrinho);
   if(!ids.length) return;
+  if(estado.loja.pedidos_ativos === false){ toast('Pedidos temporariamente desativados.'); return; }
   const nome = estado.checkout.nome.trim();
   if(!nome){ toast('Informe seu nome para o pedido'); abrirCarrinho(); return; }
   const tx = taxaAtual();
@@ -715,6 +739,22 @@ document.getElementById('foot-telefone').textContent = estado.loja.telefone ? 'T
 carregarCarrinho();
 renderizarSidebar();
 renderizar();
+
+// Manutenção / pedidos desativados
+const manutencaoAtiva = !!(estado.loja.manutencao_ativos);
+const pedidosAtivos = estado.loja.pedidos_ativos !== false;
+if(pedidosAtivos === false){
+  document.getElementById('aviso-pedidos').classList.add('visivel');
+  document.getElementById('cart-btn').style.display = 'none';
+}
+if(manutencaoAtiva){
+  document.getElementById('manut-logo').textContent = (estado.loja.nome||'S').charAt(0).toUpperCase();
+  document.getElementById('manut-texto').textContent = 'Estamos atualizando o catálogo. Volte em instantes' + (estado.loja.telefone ? ' ou fale conosco pelo WhatsApp.' : '.');
+  if(estado.loja.telefone){
+    document.getElementById('manut-contato').innerHTML = '📱 <a href="https://wa.me/55'+(estado.loja.telefone||'').replace(/\D/g,'')+'" style="color:var(--brand-d);font-weight:700">WhatsApp: '+(estado.loja.telefone||'')+'</a>';
+  }
+  document.getElementById('manutencao-overlay').classList.add('visivel');
+}
 </script>
 </body>
 </html>
