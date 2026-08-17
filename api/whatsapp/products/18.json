@@ -1,0 +1,16 @@
+{
+  "id": 18,
+  "nome": "Alumínio Brasuka Caixa 50 Folhas",
+  "codigo": "1000393",
+  "categoria": "Aluminios",
+  "subcategoria": null,
+  "descricao": null,
+  "marca": "brasuka",
+  "preco": 15,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 24,
+  "ordem": 0,
+  "imagem": null
+}

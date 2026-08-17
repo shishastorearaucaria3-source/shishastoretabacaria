@@ -1,0 +1,16 @@
+{
+  "id": 1520,
+  "nome": "Prato Yes Lotus ROSÊ",
+  "codigo": "1001165",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "marca": null,
+  "preco": 49,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 4,
+  "ordem": 0,
+  "imagem": null
+}

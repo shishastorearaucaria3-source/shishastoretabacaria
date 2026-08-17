@@ -1,0 +1,16 @@
+{
+  "id": 719,
+  "nome": "HeadShop Piteira Bem Bolado SLIM",
+  "codigo": "1000459",
+  "categoria": "HeadShop",
+  "subcategoria": null,
+  "descricao": null,
+  "marca": "Bem Bolado",
+  "preco": 3.5,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 10,
+  "ordem": 0,
+  "imagem": null
+}

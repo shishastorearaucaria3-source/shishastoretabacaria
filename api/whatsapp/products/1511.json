@@ -1,0 +1,16 @@
+{
+  "id": 1511,
+  "nome": "Prato Triton Replica ROSÊ",
+  "codigo": "000309",
+  "categoria": "pratos",
+  "subcategoria": null,
+  "descricao": null,
+  "marca": null,
+  "preco": 49.9,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 2,
+  "ordem": 0,
+  "imagem": null
+}

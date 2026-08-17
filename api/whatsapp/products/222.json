@@ -1,0 +1,16 @@
+{
+  "id": 222,
+  "nome": "Essêcia Factory Dreysson Rodrigues 50g",
+  "codigo": "1000494",
+  "categoria": "Essências",
+  "subcategoria": null,
+  "descricao": null,
+  "marca": "factory",
+  "preco": 10,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 16,
+  "ordem": 0,
+  "imagem": null
+}

@@ -1,0 +1,16 @@
+{
+  "id": 747,
+  "nome": "HeadShop Seda Crema WHITE",
+  "codigo": "1000601",
+  "categoria": "HeadShop",
+  "subcategoria": null,
+  "descricao": null,
+  "marca": "crema",
+  "preco": 5,
+  "preco_promo": null,
+  "tem_promo": false,
+  "disponivel": true,
+  "estoque": 32,
+  "ordem": 0,
+  "imagem": null
+}
