@@ -135,6 +135,27 @@ footer{border-top:1px solid var(--line);margin-top:30px;background:#fff}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:80;transition:transform .25s;opacity:0}
 .toast.visivel{transform:translateX(-50%);opacity:1}
 
+/* Checkout */
+.checkout-sec{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.checkout-sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px}
+.modo-btns{display:flex;gap:8px;margin-bottom:12px}
+.modo-btn{flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;color:var(--muted)}
+.modo-btn.ativa{background:var(--brand);border-color:var(--brand);color:#fff}
+.fld{margin-bottom:10px}
+.fld label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.fld input,.fld select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;outline:none;background:#fff}
+.fld input:focus,.fld select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.fld-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fld .cep-linha{display:flex;gap:8px}
+.fld .cep-linha input{flex:1}
+.buscar-cep{white-space:nowrap;padding:11px 14px;border-radius:10px;background:var(--ink);color:#fff;font-weight:700;font-size:13px}
+.buscar-cep:hover{background:#1e293b}
+.zona-info{font-size:12px;color:var(--muted);margin-top:6px}
+.zona-info.ok{color:var(--brand-d);font-weight:600}
+.zona-info.err{color:var(--warn);font-weight:600}
+.localizar{width:100%;margin-top:6px;padding:9px;border-radius:10px;border:1px solid var(--line);background:#f8fafc;color:var(--ink);font-weight:600;font-size:13px}
+.localizar:hover{background:#f1f5f9}
+
 @media(max-width:860px){
   .layout{grid-template-columns:1fr;padding:12px}
   .sidebar{display:none}
@@ -229,6 +250,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;background:#fff}
   <div class="drawer-body" id="drawer-body"></div>
   <div class="drawer-foot" id="drawer-foot" style="display:none">
     <div class="linha"><span>Subtotal</span><span id="r-subtotal">R$ 0,00</span></div>
+    <div class="linha" id="r-entrega-linha" style="display:none"><span id="r-entrega-lbl">Entrega</span><span id="r-entrega">R$ 0,00</span></div>
     <div class="linha total"><span>Total</span><span id="r-total">R$ 0,00</span></div>
     <button class="finalizar" onclick="finalizarPedido()">Continuar pedido</button>
   </div>
@@ -266,10 +288,41 @@ footer{border-top:1px solid var(--line);margin-top:30px;background:#fff}
 const DADOS = window.DADOS;
 const EXIBICAO = window.EXIBICAO || { mostrar_estoque:true, sem_estoque:'despublicar', aceitar_pedidos_sem_estoque:false, destacar_promocoes:true };
 
-const estado = { produtos: DADOS.produtos, loja: DADOS.loja, categorias: DADOS.categorias, carrinho: {}, catAtiva: '', busca: '', ordem: 'relevancia' };
+const estado = { produtos: DADOS.produtos, loja: DADOS.loja, categorias: DADOS.categorias, carrinho: {}, catAtiva: '', busca: '', ordem: 'relevancia', checkout: { modo: 'entrega', nome: '', whatsapp: '', cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '', zonaId: null, obs: '' } };
 
 function fmt(v){ return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
 function esc(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function pontoEmPoligono(lat, lng, poligono){
+  let dentro = false;
+  const pts = poligono || [];
+  for(let i=0, j=pts.length-1; i<pts.length; j=i++){
+    const xi = pts[i].lat, yi = pts[i].lng;
+    const xj = pts[j].lat, yj = pts[j].lng;
+    const cruza = yi > lng !== yj > lng && lat < ((xj-xi)*(lng-yi))/(yj-yi)+xi;
+    if(cruza) dentro = !dentro;
+  }
+  return dentro;
+}
+function encontrarZona(lat, lng){
+  const zonas = estado.loja.zonas || [];
+  for(const z of zonas){
+    if(z.poligono && pontoEmPoligono(lat, lng, z.poligono)) return z;
+  }
+  return null;
+}
+function zonaSelecionada(){
+  const zonas = estado.loja.zonas || [];
+  return zonas.find(z => z.id === estado.checkout.zonaId) || null;
+}
+function taxaAtual(){
+  const zonas = estado.loja.zonas || [];
+  const z = zonaSelecionada();
+  if(estado.checkout.modo === 'retirada') return 0;
+  if(z) return z.preco;
+  if(zonas.length === 0) return estado.loja.taxa_entrega || 0;
+  return null;
+}
 
 function carregarCarrinho(){
   try { const s = localStorage.getItem('catalogo_carrinho'); if(s) estado.carrinho = JSON.parse(s); } catch(e){}
@@ -417,23 +470,194 @@ function renderizarCarrinho(){
       '<div class="sub">'+fmt(preco*q)+'</div>'+
     '</div>';
   }).join('');
+  body.innerHTML += htmlCheckout();
   foot.style.display='block';
-  document.getElementById('r-subtotal').textContent = fmt(total());
-  document.getElementById('r-total').textContent = fmt(total());
+  atualizarResumo();
+}
+
+function htmlCheckout(){
+  const l = estado.loja;
+  const temEntrega = l.aceita_entrega !== false;
+  const temRetirada = l.aceita_retirada === true;
+  const zonas = l.zonas || [];
+  const sel = zonaSelecionada();
+  const entregaAtiva = estado.checkout.modo === 'entrega';
+  let modoBtns = '';
+  if(temRetirada && !temEntrega){
+    modoBtns = '<button class="modo-btn ativa" onclick="setModo('retirada')">🛍️ Retirada na loja</button>';
+  } else if(temEntrega && !temRetirada){
+    modoBtns = '<button class="modo-btn ativa" onclick="setModo('entrega')">🛵 Entrega</button>';
+  } else {
+    modoBtns = '<button class="modo-btn'+(entregaAtiva?' ativa':'')+'" onclick="setModo('entrega')">🛵 Entrega</button>'+
+               '<button class="modo-btn'+(entregaAtiva?'':' ativa')+'" onclick="setModo('retirada')">🛍️ Retirada</button>';
+  }
+  const optZonas = zonas.map(z=>'<option value="'+z.id+'"'+(z.id===estado.checkout.zonaId?' selected':'')+'>'+esc(z.nome)+' — '+fmt(z.preco)+'</option>').join('');
+  const zonaCampo = zonas.length ? (
+    '<div class="fld"><label>Zona de entrega</label>'+
+    '<select id="ck-zona" onchange="document.getElementById('ck-zona-info').textContent='';document.getElementById('ck-zona-info').className='zona-info';document.getElementById('ck-zona-id').value=this.value;estado.checkout.zonaId=this.value===''?null:Number(this.value);atualizarResumo()">'+
+    '<option value="">Selecione a zona...</option>'+optZonas+'</select>'+
+    '<button class="localizar" type="button" onclick="buscarCep()">Localizar zona pelo CEP</button>'+
+    '<div class="zona-info" id="ck-zona-info"></div>'+
+    '<input type="hidden" id="ck-zona-id" value="'+(estado.checkout.zonaId??'')+'"/>'+
+    '</div>'
+  ) : '';
+  const entregaFields = entregaAtiva ? (
+    '<div id="ck-entrega-fields">'+
+      (zonaCampo)+
+      '<div class="fld"><label>CEP</label><div class="cep-linha">'+
+        '<input id="ck-cep" value="'+esc(estado.checkout.cep)+'" placeholder="00000-000" maxlength="9" oninput="estado.checkout.cep=this.value" onblur="if(this.value.length===9)buscarCep()"/>'+
+        '<button class="buscar-cep" type="button" onclick="buscarCep()">Buscar</button>'+
+      '</div></div>'+
+      '<div class="fld"><label>Endereço (rua)</label><input id="ck-rua" value="'+esc(estado.checkout.rua)+'" placeholder="Rua" oninput="estado.checkout.rua=this.value"/></div>'+
+      '<div class="fld-row">'+
+        '<div class="fld"><label>Número</label><input id="ck-numero" value="'+esc(estado.checkout.numero)+'" placeholder="Nº" oninput="estado.checkout.numero=this.value"/></div>'+
+        '<div class="fld"><label>Bairro</label><input id="ck-bairro" value="'+esc(estado.checkout.bairro)+'" placeholder="Bairro" oninput="estado.checkout.bairro=this.value"/></div>'+
+      '</div>'+
+      '<div class="fld-row">'+
+        '<div class="fld"><label>Cidade</label><input id="ck-cidade" value="'+esc(estado.checkout.cidade)+'" placeholder="Cidade" oninput="estado.checkout.cidade=this.value"/></div>'+
+        '<div class="fld"><label>UF</label><input id="ck-uf" value="'+esc(estado.checkout.uf)+'" placeholder="UF" maxlength="2" oninput="estado.checkout.uf=this.value"/></div>'+
+      '</div>'+
+    '</div>'
+  ) : '<div id="ck-entrega-fields" style="display:none"></div>';
+  return '<div class="checkout-sec">'+
+    '<h3>Dados do pedido</h3>'+
+    '<div class="fld"><label>Seu nome</label><input id="ck-nome" value="'+esc(estado.checkout.nome)+'" placeholder="Nome do cliente" oninput="estado.checkout.nome=this.value"/></div>'+
+    '<div class="fld"><label>WhatsApp</label><input id="ck-whatsapp" value="'+esc(estado.checkout.whatsapp)+'" placeholder="(00) 00000-0000" oninput="estado.checkout.whatsapp=this.value"/></div>'+
+    '<div class="fld"><label>Recebimento</label><div class="modo-btns">'+modoBtns+'</div></div>'+
+    entregaFields+
+    '<div class="fld"><label>Observações</label><input id="ck-obs" value="'+esc(estado.checkout.obs)+'" placeholder="Ex.: pagar no Pix, entregar no portão..." oninput="estado.checkout.obs=this.value"/></div>'+
+  '</div>';
+}
+
+function setModo(m){
+  estado.checkout.modo = m;
+  renderizarCarrinho();
+  atualizarResumo();
+}
+
+async function buscarCep(){
+  const cep = (document.getElementById('ck-cep')?.value || estado.checkout.cep || '').replace(/D/g,'');
+  const info = document.getElementById('ck-zona-info');
+  if(cep.length !== 8){ if(info){info.textContent='Informe um CEP válido';info.className='zona-info err';} return; }
+  if(info){info.textContent='Buscando CEP...';info.className='zona-info';}
+  try{
+    const r = await fetch('https://viacep.com.br/ws/'+cep+'/json/');
+    const d = await r.json();
+    if(d.erro){ if(info){info.textContent='CEP não encontrado';info.className='zona-info err';} return; }
+    estado.checkout.cep = cep;
+    estado.checkout.rua = d.logradouro || estado.checkout.rua;
+    estado.checkout.bairro = d.bairro || estado.checkout.bairro;
+    estado.checkout.cidade = d.localidade || estado.checkout.cidade;
+    estado.checkout.uf = d.uf || estado.checkout.uf;
+    renderizarCarrinho();
+    const i2 = document.getElementById('ck-zona-info');
+    if(i2){
+      if(estado.loja.loja_lat && estado.loja.loja_lng){
+        i2.textContent = 'Buscando sua localização na área de entrega...';
+      } else {
+        i2.textContent = 'Endereço preenchido. Selecione a zona de entrega.';
+      }
+    }
+    if(estado.loja.loja_lat && estado.loja.loja_lng){
+      localizarZona();
+    }
+  }catch(e){
+    if(info){info.textContent='Falha ao buscar CEP';info.className='zona-info err';}
+  }
+}
+
+async function localizarZona(){
+  const info = document.getElementById('ck-zona-info');
+  const q = [estado.checkout.rua, estado.checkout.bairro, estado.checkout.cidade, estado.checkout.uf].filter(Boolean).join(', ');
+  if(!q){ if(info){info.textContent='Preencha o endereço primeiro';info.className='zona-info err';} return; }
+  if(info){info.textContent='Localizando sua região...';info.className='zona-info';}
+  try{
+    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q), { headers: { 'Accept': 'application/json' } });
+    const d = await r.json();
+    if(!d || !d.length){ if(info){info.textContent='Não foi possível localizar a região. Selecione a zona manualmente.';info.className='zona-info err';} return; }
+    const lat = parseFloat(d[0].lat), lng = parseFloat(d[0].lon);
+    const z = encontrarZona(lat, lng);
+    if(z){
+      estado.checkout.zonaId = z.id;
+      renderizarCarrinho();
+      const i2 = document.getElementById('ck-zona-info');
+      if(i2){i2.textContent='Zona encontrada: '+esc(z.nome)+' — entrega '+fmt(z.preco);i2.className='zona-info ok';}
+      atualizarResumo();
+    } else {
+      estado.checkout.zonaId = null;
+      renderizarCarrinho();
+      const i2 = document.getElementById('ck-zona-info');
+      if(i2){i2.textContent='Seu endereço está fora da área de entrega.';i2.className='zona-info err';}
+      atualizarResumo();
+    }
+  }catch(e){
+    if(info){info.textContent='Falha ao localizar. Selecione a zona manualmente.';info.className='zona-info err';}
+  }
+}
+
+function atualizarResumo(){
+  const tx = taxaAtual();
+  const entregaLinha = document.getElementById('r-entrega-linha');
+  const entregaLbl = document.getElementById('r-entrega-lbl');
+  const entregaVal = document.getElementById('r-entrega');
+  const totalEl = document.getElementById('r-total');
+  const subEl = document.getElementById('r-subtotal');
+  const st = total();
+  subEl.textContent = fmt(st);
+  if(tx !== null){
+    const mostra = estado.checkout.modo === 'entrega';
+    entregaLinha.style.display = mostra ? 'flex' : 'none';
+    if(mostra){
+      const z = zonaSelecionada();
+      entregaLbl.textContent = z ? ('Entrega — '+esc(z.nome)) : 'Entrega';
+      entregaVal.textContent = fmt(tx);
+      totalEl.textContent = fmt(st + tx);
+    } else {
+      totalEl.textContent = fmt(st);
+    }
+  } else {
+    entregaLinha.style.display = 'flex';
+    entregaLbl.textContent = 'Entrega';
+    entregaVal.textContent = 'Selecione a zona';
+    totalEl.textContent = fmt(st);
+  }
 }
 
 function finalizarPedido(){
   const ids = Object.keys(estado.carrinho);
   if(!ids.length) return;
+  const nome = estado.checkout.nome.trim();
+  if(!nome){ toast('Informe seu nome para o pedido'); abrirCarrinho(); return; }
+  const tx = taxaAtual();
+  if(estado.checkout.modo === 'entrega' && tx === null){
+    toast('Selecione a zona de entrega ou mude para retirada'); abrirCarrinho(); return;
+  }
+  const modo = estado.checkout.modo === 'retirada' ? 'Retirada na loja' : 'Entrega';
+  const z = zonaSelecionada();
   let txt = '*Novo pedido — '+estado.loja.nome+'*\n\n';
+  txt += '*Cliente:* '+nome+'\n';
+  if(estado.checkout.whatsapp.trim()) txt += '*WhatsApp:* '+estado.checkout.whatsapp.trim()+'\n';
+  txt += '*Forma:* '+modo+'\n';
+  if(modo === 'Entrega'){
+    const end = [estado.checkout.rua, estado.checkout.numero ? 'nº '+estado.checkout.numero : '', estado.checkout.bairro, estado.checkout.cidade, estado.checkout.uf].filter(Boolean).join(', ');
+    if(estado.checkout.cep) txt += '*CEP:* '+estado.checkout.cep+'\n';
+    txt += '*Endereço:* '+end+'\n';
+    if(z) txt += '*Zona:* '+z.nome+'\n';
+    if(tx > 0) txt += '*Taxa de entrega:* '+fmt(tx)+'\n';
+  }
+  txt += '\n*Itens do pedido:*\n';
   for(const id of ids){
     const p = estado.produtos.find(x=>x.id===Number(id));
     if(!p) continue;
     const preco = p.tem_promo&&p.preco_promo>0?p.preco_promo:p.preco;
     txt += '• '+p.nome+' — '+estado.carrinho[id]+'x = '+fmt(preco*estado.carrinho[id])+'\n';
   }
-  txt += '\n*Total: '+fmt(total())+'*';
-  const tel = (estado.loja.telefone||'').replace(/\D/g,'');
+  const st = total();
+  txt += '\n*Subtotal: '+fmt(st)+'*';
+  if(estado.checkout.modo === 'entrega' && tx > 0) txt += '\n*Entrega: '+fmt(tx)+'*';
+  txt += '\n*Total: '+fmt(st + (estado.checkout.modo === 'entrega' ? (tx||0) : 0))+'*';
+  if(estado.checkout.obs.trim()) txt += '\n*Obs:* '+estado.checkout.obs.trim();
+  const tel = (estado.loja.telefone||'').replace(/D/g,'');
   if(tel){
     window.open('https://wa.me/55'+tel+'?text='+encodeURIComponent(txt), '_blank');
   } else {
