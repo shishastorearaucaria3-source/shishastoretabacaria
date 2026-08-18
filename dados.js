@@ -1,2 +1,2 @@
-window.DADOS = {"loja":{"nome":"Minha Tabacaria","telefone":"","endereco":"","horario":"","aceita_entrega":true,"aceita_retirada":false,"taxa_entrega":0,"loja_lat":null,"loja_lng":null,"pedidos_ativos":true,"manutencao_ativos":false,"zonas":[]},"categorias":[],"produtos":[]};
+window.DADOS = {"loja":{"nome":"Minha Tabacaria","telefone":"","endereco":"","horario":"","aceita_entrega":true,"aceita_retirada":false,"taxa_entrega":0,"loja_lat":null,"loja_lng":null,"pedidos_ativos":true,"manutencao_ativos":true,"zonas":[]},"categorias":[],"produtos":[]};
 window.EXIBICAO = {"mostrar_estoque":true,"sem_estoque":"despublicar","aceitar_pedidos_sem_estoque":false,"destacar_promocoes":true};
